@@ -71,12 +71,12 @@ namespace ClassesLibrary
         }
         public override string ToString()
         {
-            return string.Format("-=-= {0} the {6}, {9} =-=-\n" +
+            return string.Format("-=-= {0} the {6}, {10} =-=-\n" +
                 "Life: {1} of {2}\n" +
-                "Recovery: {9}" +
+                "Recovery: {9}\n" +
                 "Equipped Weapon: {3}\n" +
                 "Accuracy: {4}%\n" +
-                "Evasion: {5}\n" +
+                "Evasion: {5}%\n" +
                 "Experience {7}/100\n" +
                 "Ghost Status: {8}",
                 Name, Life, MaxLife, EquippedWeapon.Name, HitChance, Block, CharacterRace, Experience,

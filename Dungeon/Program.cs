@@ -103,7 +103,7 @@ namespace Dungeon
                         break;
                 }
             } while (rSelected);
-            Console.WriteLine("It's another early morning in the the Last City. You navigate the busy" +
+            Console.WriteLine("It's another early morning in the the Last City, " + player.CharacterRace + ". You navigate the busy" +
         " streets, making your way to the looming Tower in the distance. There's work to do.\n");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Press any button to continue to the Tower.");
