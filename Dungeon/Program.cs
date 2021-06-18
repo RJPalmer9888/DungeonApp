@@ -24,10 +24,10 @@ namespace Dungeon
        @@@@@@@@@@@  #@@@@@@@@@(  @@@@@@@@@@@      
           @@@@@@@@  (@@@@@@@@@(  @@@@@@@@         
             @@@@@@(  @@@@@@@@@  /@@@@@@           
-              @@@@@@           @@@@@@             
+              @@@@@@   ALPHA   @@@@@@             
                @@@@@@@@@@@@@@@@@@@@@              
                 @@@@@@@@@@@@@@@@@@@               
-                 @@@@@@BETA@@@@@@@                
+                 @@@@@@@@@@@@@@@@@                
                   @@@@@@@@@@@@@@@                 
                   @@@@@@@@@@@@@@@                 
                   @@@@@@@@@@@@@@@                 
@@ -418,12 +418,12 @@ namespace Dungeon
                             "-More unique enemies\n" +
                             "-Mechanic-Based battles that add a layer of strategy\n" +
                             "-A puzzle-like final boss\n" +
-                            "-Battles involving multiple enemies at once");
+                            "-Battles involving multiple enemies at once\n");
                         exit = true;
                     }
                 } while (!exit && !reload);
             } while (!exit);
-
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine("You defeated " + score +
                 " enem" + (score == 1 ? "y" : "ies") + " of the city");
 
