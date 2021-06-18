@@ -39,7 +39,7 @@ namespace Dungeon
             //score running total variable
             int score = 0;
             //Added intro
-            //TODO - Fix Accuracy Issue
+            //Fixed Accuracy Issue
             //TODO - Add Inventories
             //TODO - Multi Enemy Battles?
 
@@ -48,7 +48,7 @@ namespace Dungeon
                 "A simple but reliable piece, requisitioned by Commander Zavala to aid you in your mission. " +
                 "Not much, but it'll get the job done");
 
-            Player player = new Player("Guardian", 40, 10, 300, 300, Race.Human, starterPistol, 0, 40);
+            Player player = new Player("Guardian", 40, 10, 300, 300, Race.Human, TClass.Titan, starterPistol, 0, 40, 20);
             //TODO - Add character customization
             //Create the outer loop - for the room and monster
             Console.Clear();
@@ -59,25 +59,114 @@ namespace Dungeon
             Console.Clear();
             Console.WriteLine("Well " + player.Name + ", today is certainly a big day. Grab your things" +
                 " and splash some water in your face. What do you see in the mirror?\n");
-            //TODO - Add race selection
-            //TODO - Add class selection
+            //Add race selection
+            bool rSelected = true;
+            do
+            {
+                //Create a menu
+
+                Console.Write("\nSelect a Race:\n" +
+                    "H)uman: Natives to Earth, the last remnants stand in the Last City.\n\n" +
+                    "E)xo: Machines derived from human minds, built for a war long forgotten.\n\n" +
+                    "A)woken: Humans who fell into a singularity, forever changing their being.\n\n" +
+                    "F)allen: An Eliksni, once Traveler's Chosen. Now aids the City and Humanity.\n\n");
+
+                //Catch the user choice
+                ConsoleKey userCChoice = Console.ReadKey(true).Key;
+                Console.Clear();
+
+                //Build our menu functionality
+                switch (userCChoice)
+                {
+                    case ConsoleKey.H:
+                        player.CharacterRace = Race.Human;
+                        rSelected = false;
+                        break;
+
+                    case ConsoleKey.E:
+                        player.CharacterRace = Race.Exo;
+                        rSelected = false;
+                        break;
+
+                    case ConsoleKey.A:
+                        player.CharacterRace = Race.Awoken;
+                        rSelected = false;
+                        break;
+
+                    case ConsoleKey.F:
+                        player.CharacterRace = Race.Fallen;
+                        rSelected = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("Incorrect option.");
+                        break;
+                }
+            } while (rSelected);
             Console.WriteLine("It's another early morning in the the Last City. You navigate the busy" +
-                " streets, making your way to the looming Tower in the distance. There's work to do.\n");
+        " streets, making your way to the looming Tower in the distance. There's work to do.\n");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Press any button to continue to the Tower.");
             Console.ResetColor();
             Console.ReadKey(true);
             Console.Clear();
+            Console.WriteLine("As you enter the Tower, there's some Requisitions here already prepared for you.\n" +
+                "Zavala must have called them for you ahead of time. Which kit do you grab?");
+            bool cSelected = true;
+
+            do
+            {
+                //Create a menu
+
+                Console.Write("\nSelect a Class:\n" +
+                    "T)itan: A steadfast class of warriors who form the frontline. Solid, large, unbroken.\n\n" +
+                    "W)arlock: An elegant class of scholars who bend the reality around them. Intelligent, thoughtful, forward-thinking.\n\n" +
+                    "H)unter: An agile class of scouts who strike from the shadows. Fast, adaptable, lethal.\n\n");
+
+                //Catch the user choice
+                ConsoleKey userRChoice = Console.ReadKey(true).Key;
+                Console.Clear();
+
+                //Build our menu functionality
+                switch (userRChoice)
+                {
+                    case ConsoleKey.T:
+                        player.PClass = TClass.Titan;
+                        player.MaxLife = 400;
+                        player.Life = 400;
+                        cSelected = false;
+                        break;
+
+                    case ConsoleKey.W:
+                        player.PClass = TClass.Warlock;
+                        player.Recovery = 30;
+                        cSelected = false;
+                        break;
+
+                    case ConsoleKey.H:
+                        player.PClass = TClass.Hunter;
+                        player.HitChance = 45;
+                        player.Block = 15;
+                        cSelected = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("Incorrect option.");
+                        break;
+                }
+                //Added class selection
+            } while (cSelected);
+
             Console.WriteLine("You ascend the elevator to the top, nervous in anticipation of the day. " +
-                "You've finally been cleared for active duty, and today is your first mission. Commander " +
-                "Zavala, director of Vanguard Operations, has requested your audience.\n");
+            "You've finally been cleared for active duty, and today is your first mission. Commander " +
+            "Zavala, director of Vanguard Operations, has requested your audience.\n");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Press any button to enter Zavala's office");
             Console.ResetColor();
             Console.ReadKey(true);
             Console.Clear();
             //Zavala's Office
-            Console.WriteLine("\"Hello Guardian\" Zavala greets.\n" +
+            Console.WriteLine("\"" + player.PClass + ".\" Zavala greets.\n" +
                 "\"Ready to get to work? Good. We've recieved intel from our Hunters that a " +
                 "significant enemy presence has been spotted building in the EDZ. Scouts report " +
                 "they've been using an old Exodus Colony ship to assemble their forces.\"\n\n" +
@@ -132,7 +221,7 @@ namespace Dungeon
                         " spot the derelict Colony Ship. You land a ways out and move in on foot. \nThere's " +
                         "a single Fallen Vandal out front.\n\n");
                     monster = monsters[0];
-                    
+
                 }
                 if (finalBoss)
                 {
@@ -191,12 +280,13 @@ namespace Dungeon
                                 {
                                     entry1 = false;
                                 }
-                                
+
                                 if (finalBoss)
                                 {
                                     win = true;
                                 }
                                 score++;
+                                player.Life += player.Recovery;
                                 talk = true;
                             }
                             break;
