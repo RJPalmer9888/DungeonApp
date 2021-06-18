@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Dungeon
@@ -26,7 +27,7 @@ namespace Dungeon
               @@@@@@           @@@@@@             
                @@@@@@@@@@@@@@@@@@@@@              
                 @@@@@@@@@@@@@@@@@@@               
-                 @@@@@@@@@@@@@@@@@                
+                 @@@@@@BETA@@@@@@@                
                   @@@@@@@@@@@@@@@                 
                   @@@@@@@@@@@@@@@                 
                   @@@@@@@@@@@@@@@                 
@@ -43,15 +44,23 @@ namespace Dungeon
             //TODO - Multi Enemy Battles?
 
             //Creating a weapon & creating the player with the weapon
-            Weapon starterPistol = new Weapon(25, 45, "City Issued Handgun", 30, false, true, 
+            Weapon starterPistol = new Weapon(25, 45, "City Issued Handgun", 30, false, true,
                 "A simple but reliable piece, requisitioned by Commander Zavala to aid you in your mission. " +
                 "Not much, but it'll get the job done");
 
-            //This is where you could give the player some interaction to choose race/weapon
-            Player player = new Player("Guardian", 40, 10, 300, 300, Race.Human, starterPistol);
+            Player player = new Player("Guardian", 40, 10, 300, 300, Race.Human, starterPistol, 0, 40);
             //TODO - Add character customization
             //Create the outer loop - for the room and monster
             Console.Clear();
+            Console.WriteLine("You awaken. Today's a big day. Very big. So big you seem to have forgotten" +
+                " your own name.\n");
+            Console.WriteLine("What was it again?\n");
+            player.Name = Console.ReadLine();
+            Console.Clear();
+            Console.WriteLine("Well " + player.Name + ", today is certainly a big day. Grab your things" +
+                " and splash some water in your face. What do you see in the mirror?\n");
+            //TODO - Add race selection
+            //TODO - Add class selection
             Console.WriteLine("It's another early morning in the the Last City. You navigate the busy" +
                 " streets, making your way to the looming Tower in the distance. There's work to do.\n");
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -98,37 +107,45 @@ namespace Dungeon
             Console.ResetColor();
             Console.ReadKey(true);
             Console.Clear();
-
+            bool finalBoss = false;
+            bool win = false;
             bool exit = false;
-
+            bool entry1 = true;
             do
             {
                 //Create a monster array
-                Monster fallenScavenger = new Monster("Fallen Scavenger", 100, 100, 10, 40, 5, 20,
+                Monster fallenScavenger = new Monster("Fallen Scavenger", 100, 100, 50, 10, 5, 20,
                     "An Eliksni Vandal, searching a pile of wreckage for parts.");
-                Monster fallenCaptain = new Monster("Fallen Captain", 200, 200, 50, 20, 5, 20,
+                Monster fallenCaptain = new Monster("Fallen Captain", 200, 200, 50, 5, 5, 30,
                     "A high ranking Eliksni, larger than the other ether-deprieved Dregs you've seen.");
-                Monster fallenServitor = new Monster("Fallen Servitor", 200, 200, 50, 20, 5, 20,
-                    "A high ranking Eliksni, larger than the other ether-deprieved Dregs you've seen.");
-                Monster[] monsters = { fallenScavenger, fallenCaptain, fallenScavenger };
-                bool entry = true;
+                Monster fallenServitor = new Monster("Fallen Servitor", 1000, 1000, 60, 5, 5, 50,
+                    "An Eliksni Servitor, one of their machine gods that gives them strength.");
+                Monster[] monsters = { fallenScavenger, fallenCaptain, fallenServitor };
+
                 Monster monster = monsters[0];
                 Random rand = new Random();
-                int randomNbr = rand.Next(monsters.Length);
-                if (entry == true)
+                int randomNbr = rand.Next(monsters.Length - 1);
+
+                if (entry1 == true)
                 {
                     Console.WriteLine("After a short flight you pull over the EDZ. On the horizon you" +
                         " spot the derelict Colony Ship. You land a ways out and move in on foot. \nThere's " +
                         "a single Fallen Vandal out front.\n\n");
                     monster = monsters[0];
-                    entry = false;
+                    
                 }
-                else
+                if (finalBoss)
+                {
+                    Console.WriteLine("You've arrived at the helm of the ship. Before you lies the source" +
+                        " of this corruption. Time to put an end to this.");
+                    monster = monsters[2];
+                }
+                if (!finalBoss && !entry1)
                 {
                     //Load a room
                     Console.WriteLine(GetRoom());
                     //TODO - Add movement animation
-                    
+
                     monster = monsters[randomNbr];
                 }
                 //Load a room
@@ -138,7 +155,7 @@ namespace Dungeon
 
                 //Inner loop for menu
                 bool reload = false;
-                
+                bool talk = true;
                 do
                 {
                     //Create a menu
@@ -148,6 +165,7 @@ namespace Dungeon
                         "R) Run Away\n" +
                         "P) Player Info\n" +
                         "M) Monster Info\n" +
+                        "T) Talk with Ghost" +
                         "X) Exit\n");
 
                     //Catch the user choice
@@ -164,12 +182,22 @@ namespace Dungeon
                             {
                                 //Monster is dead, could add loot, or something
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine("\nYou killed {0}!\n", monster.Name);
+                                Console.WriteLine("\nYou killed the {0}!\n", monster.Name);
                                 //Reload new room and monster
                                 Console.ResetColor();
                                 reload = true;
                                 //Add to score
+                                if (entry1)
+                                {
+                                    entry1 = false;
+                                }
+                                
+                                if (finalBoss)
+                                {
+                                    win = true;
+                                }
                                 score++;
+                                talk = true;
                             }
                             break;
 
@@ -195,10 +223,25 @@ namespace Dungeon
                             Console.WriteLine(monster);
                             break;
 
+                        case ConsoleKey.T:
+                            if (talk)
+                            {
+                                Console.WriteLine("You check in on Ghost\n\n");
+                                //Handle Monster Info Functionality
+                                Console.WriteLine("How are you hanging in there? Don't lose hope yet!");
+                                player.GhostConfidence += 30;
+                            }
+                            else
+                            {
+                                Console.WriteLine("You just spoke to Ghost, you have to deal with this" +
+                                    " threat in front of you first!");
+                            }
+                            break;
+
                         case ConsoleKey.X:
                         case ConsoleKey.E:
                         case ConsoleKey.Escape:
-                            Console.WriteLine("No one likes a quitter");
+                            Console.WriteLine("Retreat to the ship! You get out while you still can.");
                             exit = true;
                             break;
 
@@ -211,15 +254,86 @@ namespace Dungeon
                     if (player.Life <= 0)
                     {
                         //TODO - Add resurrection event
-                        Console.WriteLine("Dude, you died!");
-                        Console.WriteLine($"You defeated {score} enemies during your game!");
+                        //TODO - Add Ghost relationship stats, talking with your ghost will
+                        //increase it's confidence to more reliably resurrect you.
+                        Console.WriteLine("You've fallen in battle. It's up to your Ghost to save you now");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("Call to them.");
+                        Console.ResetColor();
+                        Console.ReadKey(true);
+                        Random believe = new Random();
+                        int ressurection = believe.Next(0, 75);
+                        Console.Clear();
+                        Console.BackgroundColor = ConsoleColor.DarkBlue;
+                        Thread.Sleep(100);
+                        Console.Clear();
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        Console.BackgroundColor = ConsoleColor.DarkBlue;
+                        Thread.Sleep(100);
+                        Console.Clear();
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        Console.BackgroundColor = ConsoleColor.DarkBlue;
+                        Thread.Sleep(100);
+                        Console.Clear();
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Thread.Sleep(2000);
+                        if (ressurection < player.GhostConfidence)
+                        {
+                            Console.Clear();
+                            Console.BackgroundColor = ConsoleColor.Yellow; //TODO - What.
+                            Console.Beep(600, 700);
+                            Thread.Sleep(1000);
+                            Console.ResetColor();
+                            Console.Clear();
+                            Console.WriteLine("Your Ghost rushes to your side, reviving you!\n" +
+                                "Eyes up, Guardian!");
+                            player.Life = player.MaxLife;
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.BackgroundColor = ConsoleColor.Red;
+                            Console.Beep(200, 600);
+                            Thread.Sleep(500);
+                            Console.ResetColor();
+                            Console.Clear();
+                            Console.WriteLine("Your Ghost was unable to make it to you. You are lost" +
+                            " to darkness.");
+
+                            exit = true;
+                        }
+
+
+                    }
+                    if (score == 5)
+                    {
+                        finalBoss = true;
+                    }
+                    if (win)
+                    {
+                        Console.WriteLine("The machine whirs and stutters, before dramatically spinning" +
+                            " and exploding in an astounding fashion. \n\nMission complete. The City is safe..." +
+                            " for now.\n\n\n");
+                        Console.WriteLine("Thanks for playing the Alpha of my game! This is just" +
+                            " a taste of things to come. Upcoming features include:\n" +
+                            "-A Narrative-driven adventure to find out what's going on within the ship\n" +
+                            "-Tons of new weapons for you to find and equip\n" +
+                            "-An XP system for advancing your skills\n" +
+                            "-More unique enemies\n" +
+                            "-Mechanic-Based battles that add a layer of strategy\n" +
+                            "-A puzzle-like final boss\n" +
+                            "-Battles involving multiple enemies at once");
                         exit = true;
                     }
                 } while (!exit && !reload);
             } while (!exit);
 
             Console.WriteLine("You defeated " + score +
-                " enem" + (score == 1 ? "y" : "ies")+ " of the city");
+                " enem" + (score == 1 ? "y" : "ies") + " of the city");
 
         }
         //Create a GetRoom() & plug this in the appropriate ToDo above
@@ -228,23 +342,65 @@ namespace Dungeon
             //Create a collection of different rooms.
             string[] rooms =
             {
-                ".",
-                ".",
-                ".",
-                ".",
-                ".",
-                ".",
-                "."
+                "A group of Fallen crowd in the corner. One of them singles you out.",
+                "You push forward into a strangly familiar room. Unfortunately no time for reminiscing, a Fallen attacks!.",
+                "It's truly disheartening to see what's become of the ship. Luckily an oncoming Fallen moves in to provide some therapy.",
+                "The data room. Could be useful information to grab after dealing with the guards.",
+                "A Fallen seems to have found a new toy. Might as well give them a target to test it on.",
+                "More Fallen, what a surprise.",
+                "These rooms are kinda repetitive, maybe the developer should add some new mechanics."
             };
 
             //Generate a random object
             Random rand = new Random();
             //Generate a random index number using Next()
-            int indexNbr = rand.Next(rooms.Length);
+            string room = "You shouldn't be reading this.";
+            int secret = rand.Next(1, 50);
+            if (secret == 42)
+            {
+                room = rooms[rooms.Length - 1];
+            }
+            else
+            {
+                room = rooms[rand.Next(rooms.Length - 1)];
+            }
+
             //create a string for the single room that will be returned
-            string room = rooms[indexNbr];
             //return the room
             return room;
         }
     }
 }
+//TODO - Add class selection T/health W/Regen H/Evasion
+//do
+//            {
+//                //Create a menu
+//                #region Menu
+//                Console.Write("\nSelect a Race:\n" +
+//                    "T)itan: A steadfast class of warriors who form the frontline. Solid, large, unbroken.\n\n" +
+//                    "W)arlock: An elegant class of scholars who bend the reality around them. Intelligent, thoughtful, forward-thinking.\n\n" +
+//                    "H)unter: An agile class of scouts who strike from the shadows. Fast, adaptable, lethal.\n\n");
+
+//                //Catch the user choice
+//                ConsoleKey userChoice = Console.ReadKey(true).Key;
+//Console.Clear();
+
+//                //Build our menu functionality
+//                switch (userChoice)
+//                {
+//                    case ConsoleKey.T:
+//                        player.MClass = "Titan"
+//                        break;
+
+//                    case ConsoleKey.W:
+//                        player.MClass = "Warlock"
+//                        break;
+
+//                    case ConsoleKey.H:
+//                        player.MClass = "Hunter"
+//                        break;
+
+//                    default:
+//                        Console.WriteLine("Incorrect option.");
+//                        break;
+//                }
