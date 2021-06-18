@@ -67,7 +67,7 @@ namespace ClassesLibrary
                 return "Ready";
             }
             else
-                return "Confidence";
+                return "Steadfast";
         }
         public override string ToString()
         {

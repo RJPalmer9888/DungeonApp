@@ -200,6 +200,7 @@ namespace Dungeon
             bool win = false;
             bool exit = false;
             bool entry1 = true;
+            bool talk = true;
             do
             {
                 //Create a monster array
@@ -244,7 +245,7 @@ namespace Dungeon
 
                 //Inner loop for menu
                 bool reload = false;
-                bool talk = true;
+                
                 do
                 {
                     //Create a menu
@@ -254,7 +255,7 @@ namespace Dungeon
                         "R) Run Away\n" +
                         "P) Player Info\n" +
                         "M) Monster Info\n" +
-                        "T) Talk with Ghost" +
+                        "T) Talk with Ghost\n" +
                         "X) Exit\n");
 
                     //Catch the user choice
@@ -320,6 +321,7 @@ namespace Dungeon
                                 //Handle Monster Info Functionality
                                 Console.WriteLine("How are you hanging in there? Don't lose hope yet!");
                                 player.GhostConfidence += 30;
+                                talk = false;
                             }
                             else
                             {
